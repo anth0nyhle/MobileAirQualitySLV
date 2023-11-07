@@ -1,1 +1,1 @@
-# Mobile Monitoring of Air Quality in the Salt Lake Valley
+# Mobile Air Quality Monitoring in the Salt Lake Valley
