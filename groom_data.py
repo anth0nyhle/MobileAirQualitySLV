@@ -36,6 +36,7 @@ for filename in os.listdir(aq_data_path):
         transit_df['Day_of_Year'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_yday)
         transit_df['Day_of_Month'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_mday)
         transit_df['Minute'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_min)
+        transit_df['Hour'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_hour)
         
         pm25_cols = transit_df.filter(like='PM2.5_Concentration_ug/m3')
         ozone_cols = transit_df.filter(like='Ozone_Concentration_ppbv')
