@@ -17,31 +17,36 @@ for filename in os.listdir(aq_data_path):
         transit_df = transit_df.iloc[1:].reset_index(drop=True)
         transit_df.columns = new_headers
 
-        transit_df['Timestamp_UTC'] = pd.to_datetime(transit_df['Timestamp_UTC'])
+        transit_df['Timestamp_UTC'] = pd.to_datetime(
+            transit_df['Timestamp_UTC'])
         
         transit_df.iloc[:, 1:-2] = transit_df.iloc[:, 1:-2].astype(float)
 
-        # num_cols = transit_df.shape[1]
-        
-        # for col in range(1, 18):
-        #   transit_df.iloc[:, col] = transit_df.iloc[:, col].astype(float)
-
-        # transit_df['PM2.5_Data_Flagged_binary'] = transit_df['PM2.5_Data_Flagged_binary'].astype(bool)
-        # transit_df['Ozone_Data_Flagged_binary'] = transit_df['Ozone_Data_Flagged_binary'].astype(bool)
-
-        transit_df['Time_Tuple'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple())
-        transit_df['Date'] = transit_df['Timestamp_UTC'].apply(lambda x: x.date())
-        transit_df['Year'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_year)
-        transit_df['Month'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_mon)
-        transit_df['Day_of_Year'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_yday)
-        transit_df['Day_of_Month'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_mday)
-        transit_df['Minute'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_min)
-        transit_df['Hour'] = transit_df['Timestamp_UTC'].apply(lambda x: x.timetuple().tm_hour)
+        transit_df['Time_Tuple'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple())
+        transit_df['Date'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.date())
+        transit_df['Year'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_year)
+        transit_df['Month'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_mon)
+        transit_df['Day_of_Year'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_yday)
+        transit_df['Day_of_Month'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_mday)
+        transit_df['Minute'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_min)
+        transit_df['Hour'] = transit_df['Timestamp_UTC'].apply(
+            lambda x: x.timetuple().tm_hour)
         
         pm25_cols = transit_df.filter(like='PM2.5_Concentration_ug/m3')
         ozone_cols = transit_df.filter(like='Ozone_Concentration_ppbv')
         
-        transit_df_filt = transit_df[(pm25_cols != -9999.00).all(axis=1) & (ozone_cols != -9999.00).all(axis=1) & (transit_df['Latitude_ddeg'] != -9999.00) & (transit_df['Longitude_ddeg'] != -9999.00)]
+        transit_df_filt = transit_df[
+            (pm25_cols != -9999.00).all(axis=1) &
+            (ozone_cols != -9999.00).all(axis=1) &
+            (transit_df['Latitude_ddeg'] != -9999.00) &
+            (transit_df['Longitude_ddeg'] != -9999.00)]
 
         transit_df_gmd = transit_df_filt.iloc[::30, :].reset_index(drop=True)
         
