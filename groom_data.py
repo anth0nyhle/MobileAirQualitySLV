@@ -1,7 +1,7 @@
 import os
 import pandas as pd
 
-aq_data_path = './data/aq_data/'
+aq_data_path = './data/aq_data_test/'
 
 for filename in os.listdir(aq_data_path):
     if filename.endswith('.csv'):
