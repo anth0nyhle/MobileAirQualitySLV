@@ -1,12 +1,15 @@
 import os
 import pandas as pd
 
-aq_data_path = './data/aq_data_test/'
+raw_data_path = './raw_data/'  # Path to raw data stored locally
+gmd_data_path = './data/aq_data/'  # Path to groomed data
 
-for filename in os.listdir(aq_data_path):
+for filename in os.listdir(raw_data_path):
     if filename.endswith('.csv'):
-        file_path = os.path.join(aq_data_path, filename)
-        transit_df = pd.read_csv(file_path, low_memory=False)
+        raw_file_path = os.path.join(raw_data_path, filename)
+        gmd_file_path = os.path.join(gmd_data_path, filename)
+        transit_id = filename.split('_')[0]
+        transit_df = pd.read_csv(raw_file_path, low_memory=False)
 
         headers = transit_df.columns.to_list()
         units = transit_df.iloc[0].to_list()
@@ -35,6 +38,7 @@ for filename in os.listdir(aq_data_path):
             lambda x: x.timetuple().tm_min)
         transit_df['Hour'] = transit_df['Timestamp_UTC'].apply(
             lambda x: x.timetuple().tm_hour)
+        transit_df['Transit_ID'] = transit_id
         pm25_cols = transit_df.filter(like='PM2.5_Concentration_ug/m3')
         ozone_cols = transit_df.filter(like='Ozone_Concentration_ppbv')
         transit_df_filt = transit_df[
@@ -44,5 +48,5 @@ for filename in os.listdir(aq_data_path):
             (transit_df['Longitude_ddeg'] != -9999.00)]
 
         transit_df_gmd = transit_df_filt.iloc[::30, :].reset_index(drop=True)
-        transit_df_gmd.to_csv(file_path, index=False)
+        transit_df_gmd.to_csv(gmd_file_path, index=False)
         print(f'Groomed: {filename}')
