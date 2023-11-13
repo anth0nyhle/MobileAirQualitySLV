@@ -1,8 +1,8 @@
 import os
 import pandas as pd
 
-raw_data_path = './raw_data/'  # Path to raw data stored locally
-gmd_data_path = './data/aq_data/'  # Path to groomed data
+raw_data_path = './raw_data_test/'  # Path to raw data stored locally
+gmd_data_path = './data/aq_data_test/'  # Path to groomed data
 
 for filename in os.listdir(raw_data_path):
     if filename.endswith('.csv'):
