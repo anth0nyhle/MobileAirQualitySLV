@@ -1,8 +1,19 @@
 import os
 import pandas as pd
+from pandas.api.types import CategoricalDtype
 
 raw_data_path = './raw_data_test/'  # Path to raw data stored locally
 gmd_data_path = './data/aq_data_test/'  # Path to groomed data
+
+AQI_category = CategoricalDtype(categories=["Good", "Moderate", "Unhealthy for Sensitive Groups", 
+                                            "Unhealthy", "Very Unhealthy", "Hazardous"], ordered=True)
+PM25_Category = CategoricalDtype(categories=["< 12.00", "12.00 - 35.50", "35.50 - 85.50", 
+                                                "115.00 - 150.50", "150.50+"], ordered=True)
+MesoWest_Category = CategoricalDtype(categories=['< 2.00', '2.00 - 4.00', '4.00 - 6.00', 
+                                                    '6.00 - 8.00', '8.00 - 10.00','10.00 - 12.00',
+                                                    '12.00 - 20.00','20.00 - 28.00','28.00 - 35.50',
+                                                    '35.50 - 45.50','45.50 - 55.50','55.50 - 85.50',
+                                                    '85.50 - 115.50','115.50 - 150.50','150.50+'], ordered=True)
 
 for filename in os.listdir(raw_data_path):
     if filename.endswith('.csv'):
@@ -39,8 +50,43 @@ for filename in os.listdir(raw_data_path):
         transit_df['Hour'] = transit_df['Timestamp_UTC'].apply(
             lambda x: x.timetuple().tm_hour)
         transit_df['Transit_ID'] = transit_id
+        
         pm25_cols = transit_df.filter(like='PM2.5_Concentration_ug/m3')
         ozone_cols = transit_df.filter(like='Ozone_Concentration_ppbv')
+        
+        transit_df['AQI'] = pm25_cols.apply(lambda x: 'Good' if x < 12
+                                            else ('Moderate' if x < 35.5
+                                                  else ('Unhealthy for Sensitive Groups' if x < 55.5
+                                                        else ('Unhealthy' if x < 150.5
+                                                              else ('Very Unhealthy' if x < 250.5 else 'Hazardous')))))
+
+        transit_df['PM2.5_Category'] = pm25_cols.apply(lambda x: '< 12.00' if x < 12.00
+                                                       else ('12.00 - 35.50' if x < 35.50
+                                                             else ('35.50 - 85.50' if x < 85.50
+                                                                else ('115.00 - 150.50') if x < 150.50
+                                                                else ('150.50+'))))
+
+
+        transit_df['Meso_West_Category'] = pm25_cols.apply(lambda x: '< 2.00' if x < 2.00
+                                                           else ('2.00 - 4.00' if x < 4.00
+                                                                 else ('4.00 - 6.00' if x < 6.00
+                                                                      else ('6.00 - 8.00') if x < 8.00
+                                                                      else ('8.00 - 10.00') if x < 10.00
+                                                                      else ('10.00 - 12.00') if x < 12.00
+                                                                      else ('12.00 - 20.00') if x < 20.00
+                                                                      else ('20.00 - 28.00') if x < 28.00
+                                                                      else ('28.00 - 35.50') if x < 35.50
+                                                                      else ('35.50 - 45.50') if x < 45.50
+                                                                      else ('45.50 - 55.50') if x < 55.50
+                                                                      else ('55.50 - 85.50') if x < 85.50
+                                                                      else ('85.50 - 115.50') if x < 115.50
+                                                                      else ('115.50 - 150.50') if x < 150.50
+                                                                      else ('150.50+'))))
+
+        transit_df['AQI'] = transit_df['AQI'].astype(AQI_category)
+        transit_df['PM2.5_Category'] = transit_df['PM2.5_Category'].astype(PM25_Category)
+        transit_df['Meso_West_Category'] = transit_df['Meso_West_Category'].astype(MesoWest_Category)
+
         transit_df_filt = transit_df[
             (pm25_cols != -9999.00).all(axis=1) &
             (ozone_cols != -9999.00).all(axis=1) &
