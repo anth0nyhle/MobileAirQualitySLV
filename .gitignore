@@ -175,3 +175,4 @@ cython_debug/
 /raw_data/*
 /raw_data_test/*
 zcta_data/tl_rd22_us_zcta520.shp
+/data/transit_dfs/*
